@@ -12,6 +12,8 @@ offers_menu_message = 'See our special offers'
 custom_cake_menu_message = 'Learn more about our custom cake'
 last_order_delivery_status_message = 'Here is the information about your order'
 order_history_message = 'Here is your order history'
+custom_cake_levels_message = 'Choose how many levels you want on the cake'
+custom_cake_shape_message = 'Choose the cake shape'
 
 
 @bot.message_handler(commands=['start'])
@@ -32,21 +34,35 @@ def callback(call):
             bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.id)
             with open(os.path.join('images', 'cake_main.png'), 'rb') as cake_picture:
                 bot.send_photo(call.message.chat.id, cake_picture, caption=main_menu_message, reply_markup=theme_markup.get_main_markup())
-        elif call.data == 'see_cake_menu':
+        if call.data == 'see_cake_menu':
             bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.id)
             bot.send_message(call.message.chat.id, cake_menu_message, reply_markup=theme_markup.get_cake_menu_markup())
-        elif call.data == 'see_offers':
+        if call.data == 'see_offers':
             bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.id)
             bot.send_message(call.message.chat.id, offers_menu_message, reply_markup=theme_markup.get_offers_markup())
-        elif call.data == 'custom_cake_about':
+        if call.data == 'custom_cake_about':
             bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.id)
             bot.send_message(call.message.chat.id, custom_cake_menu_message, reply_markup=theme_markup.get_custom_cake_about_markup())
-        elif call.data == 'last_order_delivery_status':
+        if call.data == 'last_order_delivery_status':
             bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.id)
             bot.send_message(call.message.chat.id, last_order_delivery_status_message, reply_markup=theme_markup.get_last_order_delivery_status_markup())
-        elif call.data == 'see_history':
+        if call.data == 'see_history':
             bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.id)
             bot.send_message(call.message.chat.id, order_history_message, reply_markup=theme_markup.get_history_markup())
+        if call.data == 'custom_cake_start':
+            bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text=custom_cake_levels_message, reply_markup=theme_markup.get_custom_cake_levels_markup())
+        if call.data == 'custom_cake_level_1':
+            bot.edit_message_text(call.message.chat.id, call.message.id, text=custom_cake_shape_message, reply_markup=theme_markup.get_custom_cake_shape_markup())
+        if call.data == 'custom_cake_level_2':
+            bot.edit_message_text(call.message.chat.id, call.message.id, text=custom_cake_shape_message, reply_markup=theme_markup.get_custom_cake_shape_markup())
+        if call.data == 'custom_cake_level_3':
+            bot.edit_message_text(call.message.chat.id, call.message.id, text=custom_cake_shape_message, reply_markup=theme_markup.get_custom_cake_shape_markup())
+        
+        
+        
+        
+        
+
         
 
 bot.polling()

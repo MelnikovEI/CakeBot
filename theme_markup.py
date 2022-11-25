@@ -42,7 +42,7 @@ def get_offers_markup():
 
 def get_custom_cake_about_markup():
     markup = types.InlineKeyboardMarkup(row_width=1)
-    accept = types.InlineKeyboardButton('Order a custom cake', callback_data='custom_cake_order')
+    accept = types.InlineKeyboardButton('Order a custom cake', callback_data='custom_cake_start')
     back_to_main = types.InlineKeyboardButton('Back to main menu', callback_data='back_to_main')
     markup.add(accept, back_to_main)
     return markup
@@ -125,7 +125,7 @@ def get_custom_cake_inscription_markup():
     return markup
 
 
-def get_custom_cake_inscription_markup():
+def get_writing_custom_cake_inscription_markup():
     markup = types.InlineKeyboardMarkup(row_width=1)
     cancel_inscription = types.InlineKeyboardButton('Cancel', callback_data='cancel_inscription')
     markup.add(cancel_inscription)
@@ -145,11 +145,4 @@ def get_history_markup():
     repeat_select_order = types.InlineKeyboardButton('Repeat specific order', callback_data='repeat_specific_order')
     back_to_main = types.InlineKeyboardButton('Back to main menu', callback_data='back_to_main')
     markup.add(repeat_last_order, repeat_select_order, back_to_main)
-    return markup
-
-def initialize_markup():
-    markup = types.InlineKeyboardMarkup(row_width=1)
-    item = types.InlineKeyboardButton('Test', callback_data='test_1')
-    item2 = types.InlineKeyboardButton('Test2', callback_data='test_2')
-    markup.add(item, item2)
     return markup
