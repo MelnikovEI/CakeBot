@@ -41,21 +41,26 @@ class Decor(models.Model):
         return self.title
 
 
+"""
 class Inscription(models.Model):
     title = models.CharField('inscription', max_length=50)
     price = models.PositiveIntegerField('price')
+"""
 
 
 class Cake(models.Model):
     title = models.CharField('name', max_length=50, blank=True)
-    price = models.PositiveIntegerField('price')
     level = models.ForeignKey(Level, on_delete=models.CASCADE, verbose_name='levels in cake')
     shape = models.ForeignKey(Shape, on_delete=models.CASCADE, verbose_name='Shape of the cake')
     topping = models.ForeignKey(Topping, on_delete=models.CASCADE, verbose_name='Topping for the cake')
-    berries = models.ForeignKey(Berries, on_delete=models.CASCADE, verbose_name='Berries for the cake', blank=True)
-    decor = models.ForeignKey(Decor, on_delete=models.CASCADE, verbose_name='Decor for the cake', blank=True)
+    berries = models.ForeignKey(Berries, on_delete=models.CASCADE, verbose_name='Berries for the cake', null=True,
+                                blank=True)
+    decor = models.ForeignKey(Decor, on_delete=models.CASCADE, verbose_name='Decor for the cake', null=True, blank=True)
+    inscription = models.CharField('inscription', max_length=100, blank=True)
+    """
     inscription = models.ForeignKey(Inscription, on_delete=models.CASCADE, verbose_name='Inscription for the cake',
-                                    blank=True)
+                                    null=True, blank=True)"""
+    price = models.PositiveIntegerField('price', null=True, blank=True)
 
     def __str__(self):
         return self.title
