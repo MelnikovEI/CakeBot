@@ -47,81 +47,14 @@ def get_custom_cake_about_markup():
     markup.add(accept, back_to_main)
     return markup
 
- 
-def get_custom_cake_levels_markup():
-    markup = types.InlineKeyboardMarkup(row_width=3)
-    level_1 = types.InlineKeyboardButton('One level', callback_data='custom_cake_level_1')
-    level_2 = types.InlineKeyboardButton('Two levels', callback_data='custom_cake_level_2')
-    level_3 = types.InlineKeyboardButton('Three levels', callback_data='custom_cake_level_3')
-    back_to_main = types.InlineKeyboardButton('Back to main menu', callback_data='back_to_main')
-    markup.add(level_1, level_2, level_3, back_to_main)
-    return markup
-
-
-def get_custom_cake_shape_markup():
-    markup = types.InlineKeyboardMarkup(row_width=3)
-    square = types.InlineKeyboardButton('Square', callback_data='custom_cake_square')
-    circle = types.InlineKeyboardButton('Circle', callback_data='custom_cake_circle')
-    rectangle = types.InlineKeyboardButton('Rectangle', callback_data='custom_cake_rectangle')
-    back_to_custom_cake_levels = types.InlineKeyboardButton('Back', callback_data='back_to_custom_cake_levels')
-    back_to_main = types.InlineKeyboardButton('Exit', callback_data='back_to_main')
-    markup.add(square, circle, rectangle, back_to_custom_cake_levels, back_to_main)
-    return markup
-
-
-def get_custom_cake_topping_markup():
-    markup = types.InlineKeyboardMarkup(row_width=3)
-    white_syrup = types.InlineKeyboardButton('White', callback_data='white_syrup')
-    caramel_syrup = types.InlineKeyboardButton('Caramel', callback_data='caramel_syrup')
-    maple_syrup = types.InlineKeyboardButton('Maple', callback_data='maple_syrup')
-    strawberry_syrup = types.InlineKeyboardButton('Strawberry', callback_data='strawberry_syrup')
-    blueberry_syrup = types.InlineKeyboardButton('Blueberry', callback_data='blueberry_syrup')
-    milk_chocolate = types.InlineKeyboardButton('Chocolate', callback_data='milk_chocolate')
-    no_topping = types.InlineKeyboardButton('No topping', callback_data='no_topping')
-    back_to_custom_cake_shape = types.InlineKeyboardButton('Back', callback_data='back_to_custom_cake_shape')
-    back_to_main = types.InlineKeyboardButton('Exit', callback_data='back_to_main')
-    markup.add(white_syrup, caramel_syrup, maple_syrup, strawberry_syrup, blueberry_syrup, milk_chocolate, no_topping, back_to_custom_cake_shape, back_to_main)
-    return markup
-
-
-def get_custom_cake_berries_markup():
-    markup = types.InlineKeyboardMarkup(row_width=4)
-    blackberry = types.InlineKeyboardButton('Blackberry', callback_data='blackberry_berry')
-    raspberry = types.InlineKeyboardButton('Raspberry', callback_data='raspberry_berry')
-    blueberry = types.InlineKeyboardButton('Blueberry', callback_data='blueberry_berry')
-    strawberry = types.InlineKeyboardButton('Strawberry', callback_data='strawberry_berry')
-    no_berry = types.InlineKeyboardButton('Skip', callback_data='no_berry')
-    back_to_custom_cake_topping = types.InlineKeyboardButton('Back', callback_data='back_to_custom_cake_topping')
-    back_to_main = types.InlineKeyboardButton('Exit', callback_data='back_to_main')
-    finish = types.InlineKeyboardButton('Finish', callback_data='finish_customization')
-    markup.add(blackberry, raspberry, blueberry, strawberry, no_berry, finish, back_to_custom_cake_topping, back_to_main)
-    return markup
-
-
-def get_custom_cake_decorations_markup():
-    markup = types.InlineKeyboardMarkup(row_width=4)
-    pistachios = types.InlineKeyboardButton('Pistachios', callback_data='pistachios_decoration')
-    meringue = types.InlineKeyboardButton('Meringue', callback_data='meringue_decoration')
-    hazelnut = types.InlineKeyboardButton('Hazelnut', callback_data='hazelnut_decoration')
-    pecan = types.InlineKeyboardButton('Pecan', callback_data='pecan_decoration')
-    marshmallow = types.InlineKeyboardButton('Marshmallow', callback_data='marshmallow_decoration')
-    marzipan = types.InlineKeyboardButton('Marzipan', callback_data='marzipan_decoration')
-    no_decoration = types.InlineKeyboardButton('Skip', callback_data='no_decoration')
-    back_to_custom_cake_berries = types.InlineKeyboardButton('Back', callback_data='back_to_custom_cake_berries')
-    back_to_main = types.InlineKeyboardButton('Exit', callback_data='back_to_main')
-    finish = types.InlineKeyboardButton('Finish', callback_data='finish_customization')
-    markup.add(pistachios, meringue, hazelnut, pecan, marshmallow, marzipan, no_decoration, finish, back_to_custom_cake_berries, back_to_main)
-    return markup
-
 
 def get_custom_cake_inscription_markup():
     markup = types.InlineKeyboardMarkup(row_width=4)
-    add_inscription = types.InlineKeyboardButton('Add', callback_data='inscription')
+    add_inscription = types.InlineKeyboardButton('Add', callback_data='add_inscription')
     no_inscription = types.InlineKeyboardButton('Skip', callback_data='no_inscription')
     back_to_custom_cake_decorations = types.InlineKeyboardButton('Back', callback_data='back_to_custom_cake_decorations')
     back_to_main = types.InlineKeyboardButton('Exit', callback_data='back_to_main')
-    finish = types.InlineKeyboardButton('Finish', callback_data='finish_customization')
-    markup.add(add_inscription, no_inscription, finish, back_to_custom_cake_decorations, back_to_main)
+    markup.add(add_inscription, no_inscription, back_to_custom_cake_decorations, back_to_main)
     return markup
 
 
