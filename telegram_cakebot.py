@@ -1,6 +1,5 @@
 import telebot
 import os
-from telebot import types
 
 import theme_markup
 
