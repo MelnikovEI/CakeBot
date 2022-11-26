@@ -79,8 +79,10 @@ class Order(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name='client')
     comment = models.CharField('comment for order and delivery', max_length=400, blank=True)
     client_delivery_datetime = models.DateTimeField("client's date and time of the delivery")
-    forecast_delivery_datetime = models.DateTimeField("forecast date and time of the delivery")
     delivery_address = models.CharField('delivery address', max_length=200)
     is_urgent = models.BooleanField('is order urgent?', default=False)
     """The order is urgent if delivery period less than 24 hours"""
-    price = models.PositiveIntegerField('price')
+    @property
+    def price(self):
+        return self.cake.price * (1 + 0.2 * self.is_urgent)
+    forecast_delivery_datetime = models.DateTimeField("forecast date and time of the delivery", null=True, blank=True)
