@@ -25,38 +25,47 @@ prepare_order_message = 'Confirm order ?'
 
 t_menu_cakes = [
     {
+        'id': 1,
         'name': 'Red cake',
         'price': '400'
     },
     {
+        'id': 2,
         'name': 'Green cake',
         'price': '600'
     },
     {
+        'id': 3,
         'name': 'Blue cake',
         'price': '500'
     },
-    {
+    {   
+        'id': 4,
         'name': 'Silver cake',
         'price': '400'
     },
     {
+        'id': 5,
         'name': 'Gray cake',
         'price': '600'
     },
     {
+        'id': 6,
         'name': 'Orange cake',
         'price': '500'
     },
     {
+        'id': 7,
         'name': 'Velvet cake',
         'price': '400'
     },
     {
+        'id': 8,
         'name': 'Yellow cake',
         'price': '600'
     },
     {
+        'id': 9,
         'name': 'White cake',
         'price': '500'
     },
@@ -64,19 +73,30 @@ t_menu_cakes = [
 
 t_menu_offers = [
     {
+        'id': 1,
         'name': 'Red cake',
         'price': '400'
     },
     {
+        'id': 2,
         'name': 'Green cake',
         'price': '600'
     },
 ]
+
+
 t_cake_levels = [1, 2, 3]
 t_cake_shapes = ['square', 'circle', 'rectangle']
 t_cake_toppings = ['white', 'caramel', 'maple', 'strawberry', 'blueberry', 'chocolate', 'none']
 t_cake_berries = ['blackberry', 'raspberry', 'blueberry', 'strawberry', 'none']
 t_cake_decorations = ['pistachios', 'meringue', 'hazelnut', 'pecan', 'marshmallow', 'marzipan', 'none']
+
+
+def get_split_list(list, chunk_size):
+    split_list = []
+    for i in range(0, len(list), chunk_size):
+        split_list.append(list[i:i + chunk_size])
+    return split_list
 
 
 def generate_markups_for_custom_cake(cake_levels, cake_shapes, cake_toppings, cake_berries, cake_decorations):
@@ -116,22 +136,29 @@ def generate_markups_for_custom_cake(cake_levels, cake_shapes, cake_toppings, ca
     return markups
 
 
-def generate_markup_for_multiple_choice(list, add_next=False, add_back=False):
-    markup = types.InlineKeyboardMarkup()
+def generate_markup_for_multiple_choice(list):
+    markups = []
     back_to_main = types.InlineKeyboardButton('Exit', callback_data='back_to_main')
-    next = types.InlineKeyboardButton('Next', callback_data='markup_next')
-    back = types.InlineKeyboardButton('Back', callback_data='markup_back')
-    for number, object in enumerate(list):
-        button = types.InlineKeyboardButton(str(number+1), callback_data=f'menu_cake_{number+1}')
-        markup.add(button)
-    if add_next:
-        markup.add(next)
-    if add_back: 
-        markup.add(back)
-    markup.add(back_to_main)
-    return markup
+    max_choices = 5
+    split_lists = get_split_list(list, max_choices)
+    for split_list in split_lists:
+        markup = types.InlineKeyboardMarkup()
+        for number, split_list_item in enumerate(split_list):
+            button = types.InlineKeyboardButton(str(number+1), callback_data=f'list_position_id_{split_list_item.get("id")}')
+            markup.add(button)
+        if split_lists.index(split_list) > 0:
+            back = types.InlineKeyboardButton('Back', callback_data=f'markup_back_from_{split_lists.index(split_list)}')
+            markup.add(back)
+        if not split_list == split_lists[-1]:
+            next = types.InlineKeyboardButton('Next', callback_data=f'markup_next_from_{split_lists.index(split_list)}')
+            markup.add(next)
+        markup.add(back_to_main)
+        markups.append(markup)
+    return markups 
 
 custom_cake_markups = generate_markups_for_custom_cake(t_cake_levels, t_cake_shapes, t_cake_toppings, t_cake_berries, t_cake_decorations)
+cake_menu_markup = generate_markup_for_multiple_choice(t_menu_cakes)
+offers_menu_markup = generate_markup_for_multiple_choice(t_menu_offers)
 
 
 @bot.message_handler(commands=['start'])
@@ -165,19 +192,27 @@ def callback(call):
         
         if call.data == 'see_cake_menu':
             state = 'menu'
-            menu_page = 0
             bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.id)
-            bot.send_message(call.message.chat.id, cake_menu_message, reply_markup=generate_markup_for_multiple_choice(t_menu_cakes))
-            if call.data == 'next':
-                menu_page = menu_page + 1
-                bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text=cake_menu_message, reply_markup=[menu_page])
-            if call.data == 'back':
-                menu_page = menu_page - 1
+            bot.send_message(call.message.chat.id, cake_menu_message, reply_markup=cake_menu_markup[0])
+        if state == 'menu':
+            if 'markup_next_from' in call.data:
+                bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text=cake_menu_message, reply_markup=cake_menu_markup[int(call.data.split('_')[3])+1])
+            if 'markup_back_from' in call.data:
+                bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text=cake_menu_message, reply_markup=cake_menu_markup[int(call.data.split('_')[3])-1])
+            if 'list_position_id' in call.data:
+                print(call.data)
 
         if call.data == 'see_offers':
             state = 'offers'
             bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.id)
-            bot.send_message(call.message.chat.id, offers_menu_message, reply_markup=generate_markup_for_multiple_choice(t_menu_offers))
+            bot.send_message(call.message.chat.id, offers_menu_message, reply_markup=offers_menu_markup[0])
+        if state == 'offers':
+            if 'markup_next_from' in call.data:
+                bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text=cake_menu_message, reply_markup=offers_menu_markup[int(call.data.split('_')[3])+1])
+            if 'markup_back_from' in call.data:
+                bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text=cake_menu_message, reply_markup=offers_menu_markup[int(call.data.split('_')[3])-1])
+            if 'list_position_id' in call.data:
+                print(call.data)
 
         if call.data == 'custom_cake_about':
             state = 'custom_cake'
