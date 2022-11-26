@@ -53,7 +53,7 @@ def create_cake(level, shape, topping, berries='', decor='', inscription=''):
     return cake.pk
 
 
-def add_account(tg_account, pd_read=False):
+def add_client(tg_account, pd_read=False):
     """
     Creates new client and/or sets status of PD read
     :param tg_account: name of telegram account
