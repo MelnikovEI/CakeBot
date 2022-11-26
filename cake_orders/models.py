@@ -60,7 +60,16 @@ class Cake(models.Model):
     """
     inscription = models.ForeignKey(Inscription, on_delete=models.CASCADE, verbose_name='Inscription for the cake',
                                     null=True, blank=True)"""
-    price = models.PositiveIntegerField('price', null=True, blank=True)
+    @property
+    def price(self):
+        price = self.level.price + self.shape.price + self.topping.price
+        if self.berries:
+            price += self.berries.price
+        if self.decor:
+            price += self.decor.price
+        if self.inscription:
+            price += 500
+        return price
 
     def __str__(self):
         return f'{self.id} {self.title}'
