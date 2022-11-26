@@ -10,20 +10,21 @@ def get_standard_cakes():
 
 
 def get_levels():
-    return list(Level.objects.values('id', 'title', 'price'))
+    return list(Level.objects.values_list('title', flat=True))
 
 
 def get_shapes():
-    return list(Shape.objects.values('id', 'title', 'price'))
+    return list(Shape.objects.values_list('title', flat=True))
 
 
 def get_toppings():
-    return list(Topping.objects.values('id', 'title', 'price'))
+    return list(Topping.objects.values_list('title', flat=True))
 
 
 def get_berries():
-    return list(Berries.objects.values('id', 'title', 'price'))
+    return list(Berries.objects.values_list('title', flat=True))
 
 
 def get_decors():
-    return list(Decor.objects.values('id', 'title', 'price'))
+    return list(Decor.objects.values_list('title', flat=True))
+
