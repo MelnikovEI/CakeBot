@@ -1,4 +1,4 @@
-from cake_orders.models import Cake, Level, Shape, Topping, Berries, Decor
+from cake_orders.models import Cake, Level, Shape, Topping, Berries, Decor, Client
 
 
 def get_standard_cakes():
@@ -49,3 +49,37 @@ def create_cake(level, shape, topping, berries='', decor='', inscription=''):
     )
     cake.save()
     return cake.pk
+
+
+def add_account(tg_account, pd_read=False):
+    """
+    Creates new client and/or sets status of PD read
+    :param tg_account: name of telegram account
+    :param pd_read: status of PD read
+    :return: None
+    """
+    try:
+        account = Client.objects.get(tg_account=tg_account)
+    except Client.DoesNotExist:
+        new_client = Client(tg_account=tg_account, pd_read=pd_read)
+        new_client.save()
+    else:
+        account.pd_read = pd_read
+        account.save()
+
+
+def get_pd_status(tg_account):
+    try:
+        account = Client.objects.get(tg_account=tg_account)
+    except Client.DoesNotExist:
+        return False
+    else:
+        return account.pd_read
+
+
+
+#print(add_account('@MelnikovEI11'))
+print(get_pd_status('@MelnikovEI11'))
+#new_client = Client(tg_account='@MelnikovEI')
+
+#print(new_client.pk, new_client.tg_account, new_client.pd_read)

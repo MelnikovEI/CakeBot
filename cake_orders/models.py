@@ -41,13 +41,6 @@ class Decor(models.Model):
         return self.title
 
 
-"""
-class Inscription(models.Model):
-    title = models.CharField('inscription', max_length=50)
-    price = models.PositiveIntegerField('price')
-"""
-
-
 class Cake(models.Model):
     title = models.CharField('name', max_length=50, blank=True)
     level = models.ForeignKey(Level, on_delete=models.CASCADE, verbose_name='levels in cake')
@@ -74,8 +67,11 @@ class Cake(models.Model):
 
 
 class Client(models.Model):
-    tg_account = models.CharField('telegram account for communication', max_length=200)
+    tg_account = models.CharField('telegram account for communication', max_length=200, unique=True)
     pd_read = models.BooleanField('personal data agreement read?', default=False)
+
+    def __str__(self):
+        return self.tg_account
 
 
 class Order(models.Model):
