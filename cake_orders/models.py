@@ -50,9 +50,10 @@ class Cake(models.Model):
                                 blank=True)
     decor = models.ForeignKey(Decor, on_delete=models.CASCADE, verbose_name='Decor for the cake', null=True, blank=True)
     inscription = models.CharField('inscription', max_length=100, blank=True)
+    price = models.FloatField('price of the cake', null=True, blank=True)
+    #@property
 
-    @property
-    def price(self):
+    def calc_price(self):
         price = self.level.price + self.shape.price + self.topping.price
         if self.berries:
             price += self.berries.price
@@ -64,6 +65,10 @@ class Cake(models.Model):
 
     def __str__(self):
         return f'{self.id} {self.title}'
+
+    def save(self, *args, **kwargs):
+        self.price = self.calc_price()
+        super(Cake, self).save(*args, **kwargs)
 
 
 class Client(models.Model):

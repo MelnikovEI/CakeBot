@@ -100,16 +100,12 @@ def add_cake_to_order(order_id, cake_id):
 
 
 def get_orders(client_id):
+    """get all orders of a client"""
     orders = Order.objects.filter(client__id=client_id)
     return list(orders.values())
 
 
-if __name__ == '__main__':
-    print(get_orders(4))
-    #print(add_cake_to_order(2, 11))
-    print(add_account('@MelnikovEI11'))
-    #print(add_order(4, '2022-12-01', 'Адрес доставки', False))
-    #print(get_pd_status('@MelnikovEI11'))
-    #new_client = Client(tg_account='@MelnikovEI')
-
-    #print(new_client.pk, new_client.tg_account, new_client.pd_read)
+def get_cakes(order_id):
+    """get cakes from order"""
+    cakes = Cake.objects.filter(order__id=order_id)
+    return list(cakes.values('id', 'title', 'price'))
