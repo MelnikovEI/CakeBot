@@ -22,6 +22,18 @@ custom_cake_inscription_message = 'Do you want an inscription ?'
 custom_cake_receive_inscription_message = 'Please enter the inscription'
 prepare_order_message = 'Confirm order ?'
 
+t_menu_orders = [
+    {
+        'user_id'
+        'id': 1,
+        'date': '26.11.2022'
+        'time': '14:00'
+        'cake_id': '5'
+        'status': 'Completed'
+    }
+]
+
+
 
 t_menu_cakes = [
     {
@@ -228,6 +240,14 @@ def callback(call):
             state = 'order_history'
             bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.id)
             bot.send_message(call.message.chat.id, order_history_message, reply_markup=theme_markup.get_history_markup())
+        
+        if state == 'order_history':
+            if call.data == 'repeat_last_order':
+                bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text=cake_menu_message, reply_markup=theme_markup.get_repeat_last_order_markup())
+            if call.data == 'repeat_specific_order':
+                state = 'checking_specific_orders'
+
+
 
         if call.data == 'custom_cake_start':
             state = 'choosing_cake_levels'
