@@ -79,3 +79,9 @@ def get_history_markup():
     back_to_main = types.InlineKeyboardButton('Back to main menu', callback_data='back_to_main')
     markup.add(repeat_last_order, repeat_select_order, back_to_main)
     return markup
+
+def get_repeat_last_order_markup():
+    markup = types.InlineKeyboardMarkup(row_width=1)
+    accept_repeat_last_order = types.InlineKeyboardButton('Do you wish to repeat this order ?', callback_data='accept_repeat_last_order')
+    back_to_main = types.InlineKeyboardButton('Back to main menu', callback_data='back_to_main')
+    markup.add(accept_repeat_last_order, back_to_main)
