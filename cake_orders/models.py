@@ -57,9 +57,7 @@ class Cake(models.Model):
                                 blank=True)
     decor = models.ForeignKey(Decor, on_delete=models.CASCADE, verbose_name='Decor for the cake', null=True, blank=True)
     inscription = models.CharField('inscription', max_length=100, blank=True)
-    """
-    inscription = models.ForeignKey(Inscription, on_delete=models.CASCADE, verbose_name='Inscription for the cake',
-                                    null=True, blank=True)"""
+
     @property
     def price(self):
         price = self.level.price + self.shape.price + self.topping.price
@@ -85,7 +83,7 @@ class Order(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name='client')
     comment = models.CharField('comment for order and delivery', max_length=400, blank=True)
     client_delivery_datetime = models.DateTimeField("client's date and time of the delivery")
-    forecast_delivery_datetime = models.DateTimeField("client's date and time of the delivery")
+    forecast_delivery_datetime = models.DateTimeField("forecast date and time of the delivery")
     delivery_address = models.CharField('delivery address', max_length=200)
     is_urgent = models.BooleanField('is order urgent?', default=False)
     """The order is urgent if delivery period less than 24 hours"""
