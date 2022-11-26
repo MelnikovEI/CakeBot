@@ -63,7 +63,7 @@ class Cake(models.Model):
     price = models.PositiveIntegerField('price', null=True, blank=True)
 
     def __str__(self):
-        return self.title
+        return f'{self.id} {self.title}'
 
 
 class Client(models.Model):
