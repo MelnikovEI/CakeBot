@@ -12,10 +12,10 @@ import db_api
 
 bot = telebot.TeleBot('5930122900:AAG0d2Wxllm1Z5cb6E3AFDXBxM3czITkBzc')
 
-main_menu_message = 'Welcome to main menu'
-cake_menu_message = 'This is our menu of cakes'
-offers_menu_message = 'See our special offers'
-custom_cake_menu_message = 'Learn more about our custom cake'
+main_menu_message = 'Hello!You are in main menu'
+cake_menu_message = 'Here you can choose your favourite cake'
+offers_menu_message = 'See our special offers today'
+custom_cake_menu_message = 'More options for making your dream cake'
 last_order_delivery_status_message = 'Here is the information about your order'
 order_history_message = 'Here is your order history'
 custom_cake_levels_message = 'Choose how many levels you want on the cake'
