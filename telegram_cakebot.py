@@ -101,18 +101,6 @@ t_menu_cakes = [
     },
 ]
 
-t_menu_offers = [
-    {
-        'id': 1,
-        'name': 'Red cake',
-        'price': '400'
-    },
-    {
-        'id': 2,
-        'name': 'Green cake',
-        'price': '600'
-    },
-]
 
 
 t_cake_levels = [1, 2, 3]
@@ -169,7 +157,7 @@ def generate_markups_for_custom_cake(cake_levels, cake_shapes, cake_toppings, ca
 def get_cake_name_by_id(needed_id, list):
     for list_item in list:
         if list_item.get("id") == needed_id:
-            name = list_item.get("name")
+            name = list_item.get("title")
             return name
 
 
@@ -182,7 +170,7 @@ def generate_markup_for_multiple_choice_cakes(list):
     for split_list in split_lists:
         markup = types.InlineKeyboardMarkup()
         for split_list_item in split_list:
-            button = types.InlineKeyboardButton(f'{split_list_item.get("name")} - {split_list_item.get("price")} Rub', callback_data=f'list_position_id_{split_list_item.get("id")}')
+            button = types.InlineKeyboardButton(f'{split_list_item.get("title")} - {split_list_item.get("price")} Rub', callback_data=f'list_position_id_{split_list_item.get("id")}')
             markup.add(button)
         if split_lists.index(split_list) > 0:
             back = types.InlineKeyboardButton('Back', callback_data=f'markup_back_from_{split_lists.index(split_list)}')
