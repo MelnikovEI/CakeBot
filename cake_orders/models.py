@@ -51,7 +51,6 @@ class Cake(models.Model):
     decor = models.ForeignKey(Decor, on_delete=models.CASCADE, verbose_name='Decor for the cake', null=True, blank=True)
     inscription = models.CharField('inscription', max_length=100, blank=True)
     price = models.FloatField('price of the cake', null=True, blank=True)
-    #@property
 
     def calc_price(self):
         price = self.level.price + self.shape.price + self.topping.price
