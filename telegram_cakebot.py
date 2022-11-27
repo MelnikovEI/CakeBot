@@ -27,6 +27,7 @@ custom_cake_inscription_message = 'Do you want an inscription ?'
 custom_cake_receive_inscription_message = 'Please enter the inscription'
 prepare_custom_order_message = 'Confirm order ?'
 
+# get_orders(client_id)
 t_orders = [
     {
         'id': 1,
@@ -52,7 +53,7 @@ t_orders = [
 ]
 
 
-
+# get_standard_cakes()
 t_menu_cakes = [
     {
         'id': 1,
@@ -100,7 +101,7 @@ t_menu_cakes = [
         'price': '500'
     },
 ]
-
+# get_standard_cakes()
 t_menu_offers = [
     {
         'id': 1,
@@ -115,11 +116,11 @@ t_menu_offers = [
 ]
 
 
-t_cake_levels = [1, 2, 3]
-t_cake_shapes = ['square', 'circle', 'rectangle']
-t_cake_toppings = ['white', 'caramel', 'maple', 'strawberry', 'blueberry', 'chocolate', 'none']
-t_cake_berries = ['blackberry', 'raspberry', 'blueberry', 'strawberry', 'none']
-t_cake_decorations = ['pistachios', 'meringue', 'hazelnut', 'pecan', 'marshmallow', 'marzipan', 'none']
+t_cake_levels = [1, 2, 3] # get_levels()
+t_cake_shapes = ['square', 'circle', 'rectangle'] # get_shapes()
+t_cake_toppings = ['white', 'caramel', 'maple', 'strawberry', 'blueberry', 'chocolate', 'none'] # get_toppings()
+t_cake_berries = ['blackberry', 'raspberry', 'blueberry', 'strawberry', 'none'] # get_berries()
+t_cake_decorations = ['pistachios', 'meringue', 'hazelnut', 'pecan', 'marshmallow', 'marzipan', 'none'] # get_decors()
 
 
 def get_split_list(list, chunk_size):
@@ -171,7 +172,6 @@ def get_cake_name_by_id(needed_id, list):
         if list_item.get("id") == needed_id:
             name = list_item.get("name")
             return name
-
 
 
 def generate_markup_for_multiple_choice_cakes(list):
@@ -413,5 +413,4 @@ def callback(call):
                 message_to_delete = call.message
                 bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text='Please enter a comment to your order')
         
-
 bot.polling()
