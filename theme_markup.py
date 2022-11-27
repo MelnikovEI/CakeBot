@@ -109,3 +109,18 @@ def get_order_finish_markup():
     back_to_main = types.InlineKeyboardButton('Back to main menu', callback_data='back_to_main')
     markup.add(back_to_main)
     return markup
+
+def get_urgent_confirm_markup():
+    markup = types.InlineKeyboardMarkup(row_width=1)
+    confirm = types.InlineKeyboardButton('Fast delivery', callback_data='confirm_urgent')
+    decline = types.InlineKeyboardButton('Normal delivery', callback_data='not_urgent')
+    markup.add(confirm, decline)
+    return markup
+
+
+def get_menu_cake_confirm_markup():
+    markup = types.InlineKeyboardMarkup(row_width=1)
+    confirm = types.InlineKeyboardButton('Order this cake', callback_data='confirm_order_menu_cake')
+    decline = types.InlineKeyboardButton('Cancel', callback_data='decline_order_menu_cake')
+    markup.add(confirm, decline)
+    return markup

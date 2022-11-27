@@ -2,9 +2,9 @@ import os
 
 import telebot
 from telebot import types
-from bake_cake import setup
 
 import theme_markup
+from bake_cake import setup
 
 setup()
 
@@ -12,7 +12,7 @@ import db_api
 
 bot = telebot.TeleBot('5930122900:AAG0d2Wxllm1Z5cb6E3AFDXBxM3czITkBzc')
 
-main_menu_message = 'Hello!You are in main menu'
+main_menu_message = 'Hello! You are in main menu'
 cake_menu_message = 'Here you can choose your favourite cake'
 offers_menu_message = 'See our special offers today'
 custom_cake_menu_message = 'More options for making your dream cake'
@@ -34,94 +34,23 @@ t_orders = [
         'date': '26.11.2022',
         'time': '14:00',
         'cake_id': 5,
-        'status': 'Completed',
+        'status': 'completed',
     },
     {
         'id': 2,
         'date': '25.11.2022',
         'time': '15:00',
         'cake_id': 3,
-        'status': 'Completed',
+        'status': 'completed',
     },
     {
         'id': 3,
         'date': '25.11.2022',
         'time': '15:00',
         'cake_id': 2,
-        'status': 'Canceled',
+        'status': 'canceled',
     }
 ]
-
-
-# get_standard_cakes()
-t_menu_cakes = [
-    {
-        'id': 1,
-        'name': 'Red cake',
-        'price': '400'
-    },
-    {
-        'id': 2,
-        'name': 'Green cake',
-        'price': '600'
-    },
-    {
-        'id': 3,
-        'name': 'Blue cake',
-        'price': '500'
-    },
-    {   
-        'id': 4,
-        'name': 'Silver cake',
-        'price': '400'
-    },
-    {
-        'id': 5,
-        'name': 'Gray cake',
-        'price': '600'
-    },
-    {
-        'id': 6,
-        'name': 'Orange cake',
-        'price': '500'
-    },
-    {
-        'id': 7,
-        'name': 'Velvet cake',
-        'price': '400'
-    },
-    {
-        'id': 8,
-        'name': 'Yellow cake',
-        'price': '600'
-    },
-    {
-        'id': 9,
-        'name': 'White cake',
-        'price': '500'
-    },
-]
-
-# get_standard_cakes()
-t_menu_offers = [
-    {
-        'id': 1,
-        'name': 'Red cake',
-        'price': '400'
-    },
-    {
-        'id': 2,
-        'name': 'Green cake',
-        'price': '600'
-    },
-]
-
-
-t_cake_levels = [1, 2, 3] # get_levels()
-t_cake_shapes = ['square', 'circle', 'rectangle'] # get_shapes()
-t_cake_toppings = ['white', 'caramel', 'maple', 'strawberry', 'blueberry', 'chocolate', 'none'] # get_toppings()
-t_cake_berries = ['blackberry', 'raspberry', 'blueberry', 'strawberry', 'none'] # get_berries()
-t_cake_decorations = ['pistachios', 'meringue', 'hazelnut', 'pecan', 'marshmallow', 'marzipan', 'none'] # get_decors()
 
 
 def get_split_list(list, chunk_size):
@@ -167,6 +96,11 @@ def generate_markups_for_custom_cake(cake_levels, cake_shapes, cake_toppings, ca
     markups.append(cake_decorations_markup)
     return markups
 
+def approximate_delivery_time(order):
+    test = 'test'
+    return test
+    
+
 
 def get_cake_name_by_id(needed_id, list):
     for list_item in list:
@@ -203,7 +137,7 @@ def generate_markup_for_multiple_choice_orders(list):
     for split_list in split_lists:
         markup = types.InlineKeyboardMarkup()
         for split_list_item in split_list:
-            button = types.InlineKeyboardButton(f'Date: {split_list_item.get("date")}  {split_list_item.get("time")} - {get_cake_name_by_id(split_list_item.get("cake_id"), t_menu_cakes)}', callback_data=f'list_position_id_{split_list_item.get("id")}')
+            button = types.InlineKeyboardButton(f'Date: {split_list_item.get("date")}  {split_list_item.get("time")} - {get_cake_name_by_id(split_list_item.get("cake_id"), menu_cakes)}', callback_data=f'list_position_id_{split_list_item.get("id")}')
             markup.add(button)
         if split_lists.index(split_list) > 0:
             back = types.InlineKeyboardButton('Back', callback_data=f'markup_back_from_{split_lists.index(split_list)}')
@@ -215,8 +149,18 @@ def generate_markup_for_multiple_choice_orders(list):
         markups.append(markup)
     return markups 
 
-custom_cake_markups = generate_markups_for_custom_cake(t_cake_levels, t_cake_shapes, t_cake_toppings, t_cake_berries, t_cake_decorations)
-cake_menu_markup = generate_markup_for_multiple_choice_cakes(t_menu_cakes)
+    
+
+cake_levels = db_api.get_levels()
+cake_shapes = db_api.get_shapes()
+cake_toppings = db_api.get_toppings()
+cake_berries = db_api.get_berries()
+cake_decorations = db_api.get_decors()
+
+menu_cakes = db_api.get_standard_cakes()
+
+custom_cake_markups = generate_markups_for_custom_cake(cake_levels, cake_shapes, cake_toppings, cake_berries, cake_decorations)
+cake_menu_markup = generate_markup_for_multiple_choice_cakes(menu_cakes)
 
 
 @bot.message_handler(commands=['start'])
@@ -235,27 +179,33 @@ state = 'pending'
 def process_answer(message):
     global state
     global message_to_delete
+    global cake_customisation
+    global menu_cake_id
     if state == 'adding_inscription':
         state = 'confirming_inscription'
         inscription = message.text
+        print(inscription)
         bot.delete_message(message_to_delete.chat.id, message_to_delete.id)
         bot.delete_message(chat_id=message.chat.id, message_id=message.id)
         bot.send_message(message.chat.id, text=f'The inscription is: {inscription}. Confirm ?', reply_markup=theme_markup.get_inscription_confirm_markup())
     if state == 'entering_delivery_address':
         state = 'confirming_address'
         address = message.text
+        print(address)
         bot.delete_message(message_to_delete.chat.id, message_to_delete.id)
         bot.delete_message(chat_id=message.chat.id, message_id=message.id)
         bot.send_message(message.chat.id, text=f'The address is: {address}. Confirm ?', reply_markup=theme_markup.get_address_confirm_markup())
     if state == 'entering_receiver_name':
         state = 'confirming_receiver'
         receiver = message.text
+        print(receiver)
         bot.delete_message(message_to_delete.chat.id, message_to_delete.id)
         bot.delete_message(chat_id=message.chat.id, message_id=message.id)
         bot.send_message(message.chat.id, text=f'The receiver is: {receiver}. Confirm ?', reply_markup=theme_markup.get_receiver_confirm_markup())
     if state == 'entering_comment':
         state = 'confirming_comment'
         comment = message.text
+        print(comment)
         bot.delete_message(message_to_delete.chat.id, message_to_delete.id)
         bot.delete_message(chat_id=message.chat.id, message_id=message.id)
         bot.send_message(message.chat.id, text=f'The comment is: {comment}. Confirm ?', reply_markup=theme_markup.get_comment_confirm_markup())
@@ -265,6 +215,8 @@ def process_answer(message):
 def callback(call):
     global state
     global message_to_delete
+    global cake_customisation
+    global menu_cake_id
     if call.message:
         if call.data == 'back_to_main':
             state = 'main'
@@ -283,27 +235,58 @@ def callback(call):
             if 'markup_back_from' in call.data:
                 bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text=cake_menu_message, reply_markup=cake_menu_markup[int(call.data.split('_')[3])-1])
             if 'list_position_id' in call.data:
-                print(call.data)
+                menu_cake_id = (int(call.data.split("_")[3]))
+                bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text=f'You have selected {get_cake_name_by_id(int(call.data.split("_")[3]), menu_cakes)}', reply_markup=theme_markup.get_menu_cake_confirm_markup())
+            if 'decline_order_menu_cake' in call.data:
+                bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text=cake_menu_message, reply_markup=cake_menu_markup[0])
+            if 'confirm_order_menu_cake' in call.data:
+                print(menu_cake_id)
+                state = 'entering_delivery_address'
+                message_to_delete = call.message
+                bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text='Please enter your address')
 
+                
 # delivery status
         if call.data == 'last_order_delivery_status':
             state = 'last_order_status'
+            orders = db_api.get_orders(call.message.from_user.id)
             bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.id)
-            bot.send_message(call.message.chat.id, last_order_delivery_status_message, reply_markup=theme_markup.get_last_order_delivery_status_markup())
-
+            if len(orders) > 0:
+                last_order = orders[-1]
+                if last_order.get('status') == 'completed':
+                    bot.send_message(call.message.chat.id, 'Your last order is completed', reply_markup=theme_markup.get_last_order_delivery_status_markup())
+                if last_order.get('status') == 'delivery': 
+                    bot.send_message(call.message.chat.id, f'Your order was made on {last_order.get("date")} {last_order.get("date")}, and it will approximately arrive at {approximate_delivery_time(last_order)}', reply_markup=theme_markup.get_last_order_delivery_status_markup())
+                if last_order.get('status') == 'pending':
+                    bot.send_message(call.message.chat.id, 'Your last order is waiting to be processed', reply_markup=theme_markup.get_last_order_delivery_status_markup())
+                if last_order.get('status') == 'cancelled':
+                    bot.send_message(call.message.chat.id, 'Your last order is canceled', reply_markup=theme_markup.get_last_order_delivery_status_markup())
+                if last_order.get('status') == 'accepted':
+                    bot.send_message(call.message.chat.id, 'Your last order is being processed', reply_markup=theme_markup.get_last_order_delivery_status_markup())
+            else: 
+                bot.send_message(call.message.chat.id, 'You dont have any orders', reply_markup=theme_markup.get_last_order_delivery_status_markup())
+                
 # history 
         if call.data == 'see_history':
             state = 'order_history'
             bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.id)
-            bot.send_message(call.message.chat.id, order_history_message, reply_markup=theme_markup.get_history_markup())
-        
+            bot.send_message(call.message.chat.id, 'Check your order history', reply_markup=theme_markup.get_history_markup())
         if state == 'order_history':
+            orders = db_api.get_orders(call.message.from_user.id)
             if call.data == 'repeat_last_order':
-                bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text='This is your last order: ', reply_markup=theme_markup.get_repeat_last_order_markup())
+                if len(orders) > 0:
+                    last_order = orders[-1]
+                    bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text='This is your last order: ', reply_markup=theme_markup.get_repeat_last_order_markup())
+                else:
+                    bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text='You dont have any orders', reply_markup=theme_markup.get_last_order_delivery_status_markup())
             if call.data == 'repeat_specific_order':
-                user_history_markup = generate_markup_for_multiple_choice_orders(t_orders)
-                state = 'checking_specific_orders'
-                bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text='Your previous orders', reply_markup=user_history_markup[0])
+                if len(orders) > 0:
+                    user_history_markup = generate_markup_for_multiple_choice_orders(orders)
+                    state = 'checking_specific_orders'
+                    bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text='Your previous orders', reply_markup=user_history_markup[0])
+                else:
+                    bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text='You dont have any orders', reply_markup=theme_markup.get_last_order_delivery_status_markup())
+
 
         if state == 'checking_specific_orders':
             if 'markup_next_from' in call.data:
@@ -407,11 +390,17 @@ def callback(call):
 
         if state == 'confirming_comment':
             if call.data == 'confirm_comment':
-                state = 'finishing_order'
-                bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text='Thank you for your order. You can check its status in the main menu.', reply_markup=theme_markup.get_order_finish_markup())
+                state = 'confirming_urgent'
+                bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text='To receive your order quicker you can pay 500 Rub for a faster delivery', reply_markup=theme_markup.get_urgent_confirm_markup())
             if call.data == 'reenter_comment':
                 state = 'entering_comment'
                 message_to_delete = call.message
                 bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text='Please enter a comment to your order')
+        if state == 'confirming_urgent':
+            if call.data == 'confirm_urgent':
+                bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text='Thank you for your order. You can check its status in the main menu', reply_markup=theme_markup.get_order_finish_markup())
+            if call.data == 'not_urgent':
+                bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text='Thank you for your order. You can check its status in the main menu', reply_markup=theme_markup.get_order_finish_markup())
+            
         
 bot.polling()

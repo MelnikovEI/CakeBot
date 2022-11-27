@@ -1,6 +1,7 @@
 import datetime
 
-from cake_orders.models import Cake, Level, Shape, Topping, Berries, Decor, Client, Order
+from cake_orders.models import (Berries, Cake, Client, Decor, Level, Order,
+                                Shape, Topping)
 
 
 def get_standard_cakes():
