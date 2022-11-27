@@ -31,7 +31,7 @@ def get_decors():
     return list(Decor.objects.values_list('title', flat=True))
 
 
-def create_cake(level, shape, topping, berries='', decor='', inscription=''):
+def create_cake(level, shape, topping, berries, decor, inscription=''):
     """
     Create a cake with given properties
     params level, shape etc.: str
@@ -82,11 +82,11 @@ def get_pd_status(client_id):
         return account.pd_read
 
 
-def add_order(client_id, client_delivery_datetime: datetime, delivery_address, is_urgent, comment=''):
+def add_order(client_id, delivery_datetime: datetime, delivery_address, is_urgent, comment='', status=''):
     """Creates new order"""
     client = Client.objects.get(id=client_id)
-    new_order = Order(client=client, client_delivery_datetime=client_delivery_datetime,
-                      delivery_address=delivery_address, is_urgent=is_urgent, comment=comment)
+    new_order = Order(client=client, delivery_datetime=delivery_datetime,
+                      delivery_address=delivery_address, is_urgent=is_urgent, comment=comment, status=status)
     new_order.save()
     return new_order.pk
 
@@ -102,7 +102,7 @@ def add_cake_to_order(order_id, cake_id):
 def get_orders(client_id):
     """get all orders of a client"""
     orders = Order.objects.filter(client__id=client_id)
-    return list(orders.values())
+    return list(orders.values('id', 'delivery_datetime', 'status'))
 
 
 def get_cakes(order_id):
