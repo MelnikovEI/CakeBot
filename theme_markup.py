@@ -76,10 +76,10 @@ def get_repeat_last_order_markup():
     markup.add(accept_repeat_last_order, back_to_main)
     return markup
 
-def get_confirm_custom_order_markup():
+def get_inscription_confirm_markup():
     markup = types.InlineKeyboardMarkup(row_width=1)
-    confirm = types.InlineKeyboardButton('Confirm custom order', callback_data='confirm_custom_order')
-    cancel = types.InlineKeyboardButton('Cancel custom order', callback_data='back_to_main')
+    confirm = types.InlineKeyboardButton('Inscription is correct', callback_data='confirm_iscription')
+    cancel = types.InlineKeyboardButton('Reenter inscription', callback_data='reenter_inscription')
     markup.add(confirm, cancel)
     return markup
 
@@ -102,4 +102,10 @@ def get_comment_confirm_markup():
     confirm = types.InlineKeyboardButton('Comment is correct', callback_data='confirm_comment')
     reenter = types.InlineKeyboardButton('Reenter comment', callback_data='reenter_comment')
     markup.add(confirm, reenter)
+    return markup
+
+def get_order_finish_markup():
+    markup = types.InlineKeyboardMarkup(row_width=1)
+    back_to_main = types.InlineKeyboardButton('Back to main menu', callback_data='back_to_main')
+    markup.add(back_to_main)
     return markup
