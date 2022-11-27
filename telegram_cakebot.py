@@ -260,6 +260,7 @@ def callback(call):
                 bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text=cake_menu_message, reply_markup=cake_menu_markup[int(call.data.split('_')[3])-1])
             if 'list_position_id' in call.data:
                 menu_cake_id = (int(call.data.split("_")[3]))
+                print('Chosen cake id: ' + menu_cake_id)
                 bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text=f'You have selected {get_cake_name_by_id(int(call.data.split("_")[3]), menu_cakes)}', reply_markup=theme_markup.get_menu_cake_confirm_markup())
             if 'decline_order_menu_cake' in call.data:
                 bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text=cake_menu_message, reply_markup=cake_menu_markup[0])
