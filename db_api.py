@@ -115,7 +115,7 @@ def get_cakes(order_id):
 
 def get_current_datetime():
     current_time = datetime.datetime.now()
-    str_time = current_time.strftime('%Y-%m-%d %H:%M')
+    str_time = current_time.strftime('%Y-%m-%d')
     return str_time
 
 def get_estimate_delivery_datetime(urgent):
@@ -123,5 +123,5 @@ def get_estimate_delivery_datetime(urgent):
         time = datetime.datetime.now() + datetime.timedelta(days=1)
     else:
         time = datetime.datetime.now() + datetime.timedelta(days=3)
-    str_time = time.strftime('%Y-%m-%d %H:%M')
+    str_time = time.strftime('%Y-%m-%d')
     return str_time

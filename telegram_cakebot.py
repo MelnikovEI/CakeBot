@@ -3,7 +3,6 @@ import os
 import telebot
 from telebot import types
 
-
 import theme_markup
 from bake_cake import setup
 
@@ -72,16 +71,12 @@ def generate_markups_for_custom_cake(cake_levels, cake_shapes, cake_toppings, ca
     markups.append(cake_decorations_markup)
     return markups
 
-def approximate_delivery_time(order):
-    test = 'test'
-    return test
-    
-
-
 def get_cake_name_by_id(needed_id, list):
     for list_item in list:
         if list_item.get("id") == needed_id:
             name = list_item.get("title")
+        else:
+            name = 'Custom cake'
             return name
 
 
@@ -113,7 +108,7 @@ def generate_markup_for_multiple_choice_orders(list):
     for split_list in split_lists:
         markup = types.InlineKeyboardMarkup()
         for split_list_item in split_list:
-            button = types.InlineKeyboardButton(f'Date: {split_list_item.get("date")}  {split_list_item.get("time")} - {get_cake_name_by_id(split_list_item.get("cake_id"), menu_cakes)}', callback_data=f'list_position_id_{split_list_item.get("id")}')
+            button = types.InlineKeyboardButton(f'Order date: {split_list_item.get("creation_datetime")} Cake: {get_cake_name_by_id(split_list_item.get("cake_id"), menu_cakes)}, Status: {split_list_item.get("status")}', callback_data=f'list_position_id_{split_list_item.get("id")}')
             markup.add(button)
         if split_lists.index(split_list) > 0:
             back = types.InlineKeyboardButton('Back', callback_data=f'markup_back_from_{split_lists.index(split_list)}')
@@ -232,6 +227,7 @@ def callback(call):
     global menu_cake_id
     global client_id
     global message_sender_username
+    ordering_custom_cake = False
     if call.message:
         if call.data == 'accept_conditions':
             client_id = db_api.add_client(message_sender_username, pd_read=True)
@@ -258,6 +254,7 @@ def callback(call):
             with open(os.path.join('images', 'cake_main.png'), 'rb') as cake_picture:
                 bot.send_photo(call.message.chat.id, cake_picture, caption=main_menu_message, reply_markup=theme_markup.get_main_markup())
         if call.data == 'back_to_main':
+            client_id = db_api.add_client(message_sender_username, pd_read=True)
             state = 'main'
             menu_cake_id = ''
             created_order = {
@@ -314,7 +311,7 @@ def callback(call):
                 if last_order.get('status') == 'completed':
                     bot.send_message(call.message.chat.id, 'Your last order is completed', reply_markup=theme_markup.get_last_order_delivery_status_markup())
                 if last_order.get('status') == 'delivery': 
-                    bot.send_message(call.message.chat.id, f'Your order was made on {last_order.get("date")} {last_order.get("date")}, and it will approximately arrive at {approximate_delivery_time(last_order)}', reply_markup=theme_markup.get_last_order_delivery_status_markup())
+                    bot.send_message(call.message.chat.id, f'Your order was made on {last_order.get("creation_datetime")}, and it will approximately arrive at {last_order.get("delivery_datetime")}', reply_markup=theme_markup.get_last_order_delivery_status_markup())
                 if last_order.get('status') == 'pending':
                     bot.send_message(call.message.chat.id, 'Your last order is waiting to be processed', reply_markup=theme_markup.get_last_order_delivery_status_markup())
                 if last_order.get('status') == 'cancelled':
@@ -363,6 +360,7 @@ def callback(call):
         
         if call.data == 'custom_cake_start':
             state = 'choosing_cake_levels'
+            ordering_custom_cake = True
             bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text=custom_cake_levels_message, reply_markup=custom_cake_markups[0])
 
         if state == 'choosing_cake_levels':
@@ -455,7 +453,7 @@ def callback(call):
         if state == 'confirming_comment':
             if call.data == 'confirm_comment':
                 state = 'confirming_urgent'
-                bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text='To receive your order quicker you can pay 500 Rub for a faster delivery', reply_markup=theme_markup.get_urgent_confirm_markup())
+                bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text='To receive your order quicker you can pay 20% more for a faster delivery', reply_markup=theme_markup.get_urgent_confirm_markup())
             if call.data == 'reenter_comment':
                 state = 'entering_comment'
                 message_to_delete = call.message
@@ -464,8 +462,9 @@ def callback(call):
             if call.data == 'confirm_urgent':
                 print('Urgent - True')
                 created_order['is_urgent'] = True
-                new_order_personal_key = db_api.add_order(created_order['client_id'], db_api.get_current_datetime, db_api.get_estimate_delivery_datetime(created_order['is_urgent']), created_order['delivery_address'], created_order['is_urgent'], created_order['receiver'], created_order['comment'], 'pending')
-                if len(menu_cake_id) > 0:
+                new_order_personal_key = db_api.add_order(created_order['client_id'], '2022-11-28', '2022-11-29', created_order['delivery_address'], created_order['is_urgent'], created_order['receiver'], created_order['comment'], 'pending')
+               # new_order_personal_key = db_api.add_order(created_order['client_id'], db_api.get_current_datetime, db_api.get_estimate_delivery_datetime(created_order['is_urgent']), created_order['delivery_address'], created_order['is_urgent'], created_order['receiver'], created_order['comment'], 'pending')
+                if not ordering_custom_cake:
                     db_api.add_cake_to_order(new_order_personal_key, menu_cake_id)
                 else:
                     custom_cake_personal_key = db_api.create_cake(cake_customisation['level'],cake_customisation['shape'], cake_customisation['topping'], cake_customisation['berries'], cake_customisation['decor'], cake_customisation['inscription'])
@@ -474,7 +473,8 @@ def callback(call):
             if call.data == 'not_urgent':
                 print('Urgent - False')
                 created_order['is_urgent'] = False
-                new_order_personal_key = db_api.add_order(created_order['client_id'], db_api.get_current_datetime, db_api.get_estimate_delivery_datetime(created_order['is_urgent']), created_order['delivery_address'], created_order['is_urgent'], created_order['receiver'], created_order['comment'], 'pending')
+                new_order_personal_key = db_api.add_order(created_order['client_id'], '2022-11-28', '2022-11-29', created_order['delivery_address'], created_order['is_urgent'], created_order['receiver'], created_order['comment'], 'pending')
+               # new_order_personal_key = db_api.add_order(created_order['client_id'], db_api.get_current_datetime, db_api.get_estimate_delivery_datetime(created_order['is_urgent']), created_order['delivery_address'], created_order['is_urgent'], created_order['receiver'], created_order['comment'], 'pending')
                 if len(menu_cake_id) > 0:
                     db_api.add_cake_to_order(new_order_personal_key, menu_cake_id)
                 else:
