@@ -132,3 +132,13 @@ def get_estimate_delivery_datetime(urgent):
         time = datetime.datetime.now() + datetime.timedelta(days=3)
     str_time = time.strftime('%Y-%m-%d')
     return str_time
+
+
+def get_order_price(order_id):
+    """get cake price"""
+    order = Order.objects.get(id=order_id)
+    order_price = 0
+    for cake in order.cake.all():
+        order_price += cake.price
+    order_price *= (1 + 0.2 * order.is_urgent)
+    return order_price
