@@ -108,7 +108,7 @@ def generate_markup_for_multiple_choice_orders(list):
     for split_list in split_lists:
         markup = types.InlineKeyboardMarkup()
         for split_list_item in split_list:
-            button = types.InlineKeyboardButton(f'Order date: {split_list_item.get("creation_datetime")} Cake: {get_cake_name_by_id(split_list_item.get("cake_id"), menu_cakes)}, Status: {split_list_item.get("status")}', callback_data=f'list_position_id_{split_list_item.get("id")}')
+            button = types.InlineKeyboardButton(f'{split_list_item.get("creation_datetime")} {get_cake_name_by_id(split_list_item.get("cake_id"), menu_cakes)}, Status: {split_list_item.get("status")}', callback_data=f'list_position_id_{split_list_item.get("id")}')
             markup.add(button)
         if split_lists.index(split_list) > 0:
             back = types.InlineKeyboardButton('Back', callback_data=f'markup_back_from_{split_lists.index(split_list)}')
@@ -334,6 +334,11 @@ def callback(call):
                     bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text=f'This is your last order: \nOrder date: {last_order.get("creation_datetime")} Cake: {get_cake_name_by_id(last_order.get("cake_id"), menu_cakes)}, Status: {last_order.get("status")}', reply_markup=theme_markup.get_repeat_last_order_markup())
                 else:
                     bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text='You dont have any orders', reply_markup=theme_markup.get_last_order_delivery_status_markup())
+            if call.data ==  'accept_repeat_last_order':
+                last_order = orders[-1]
+                new_order_personal_key = db_api.add_order(last_order['client_id'], db_api.get_current_datetime, db_api.get_estimate_delivery_datetime(last_order['is_urgent']), last_order['delivery_address'], last_order['is_urgent'], last_order['receiver'], last_order['comment'], 'pending')
+                bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text=f'Thank you for your order. Your total: {db_api.get_order_price(new_order_personal_key)} You can check its status in the main menu', reply_markup=theme_markup.get_order_finish_markup())
+
             if call.data == 'repeat_specific_order':
                 if len(orders) > 0:
                     user_history_markup = generate_markup_for_multiple_choice_orders(orders)
@@ -468,7 +473,7 @@ def callback(call):
                 else:
                     custom_cake_personal_key = db_api.create_cake(cake_customisation['level'],cake_customisation['shape'], cake_customisation['topping'], cake_customisation['berries'], cake_customisation['decor'], cake_customisation['inscription'])
                     db_api.add_cake_to_order(new_order_personal_key, custom_cake_personal_key)
-                bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text='Thank you for your order. You can check its status in the main menu', reply_markup=theme_markup.get_order_finish_markup())
+                bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text=f'Thank you for your order. Your total: {db_api.get_order_price(new_order_personal_key)} You can check its status in the main menu', reply_markup=theme_markup.get_order_finish_markup())
             if call.data == 'not_urgent':
                 print('Urgent - False')
                 created_order['is_urgent'] = False
@@ -478,7 +483,7 @@ def callback(call):
                 else:
                     custom_cake_personal_key = db_api.create_cake(cake_customisation['level'],cake_customisation['shape'], cake_customisation['topping'], cake_customisation['berries'], cake_customisation['decor'], cake_customisation['inscription'])
                     db_api.add_cake_to_order(new_order_personal_key, custom_cake_personal_key)
-                bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text='Thank you for your order. You can check its status in the main menu', reply_markup=theme_markup.get_order_finish_markup())
+                bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text=f'Thank you for your order. Your total: {db_api.get_order_price(new_order_personal_key)} You can check its status in the main menu', reply_markup=theme_markup.get_order_finish_markup())
 
 
 
