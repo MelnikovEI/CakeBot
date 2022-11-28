@@ -83,7 +83,7 @@ def get_pd_status(tg_account):
         return account.pd_read
 
 
-def add_order(client_id, creation_datetime: datetime, delivery_datetime, delivery_address, is_urgent, recipient_name='', comment='', status=''):
+def add_order(client_id, creation_datetime: datetime, delivery_datetime: datetime, delivery_address, is_urgent, recipient_name='', comment='', status=''):
     """Creates new order"""
     client = Client.objects.get(id=client_id)
     new_order = Order(client=client, creation_datetime=creation_datetime, delivery_datetime=delivery_datetime,
@@ -115,11 +115,13 @@ def get_cakes(order_id):
 
 def get_current_datetime():
     current_time = datetime.datetime.now()
-    return str(current_time)
+    str_time = current_time.strftime('%Y-%m-%d %H:%M')
+    return str_time
 
 def get_estimate_delivery_datetime(urgent):
     if urgent:
         time = datetime.datetime.now() + datetime.timedelta(days=1)
     else:
         time = datetime.datetime.now() + datetime.timedelta(days=3)
-    return str(time)
+    str_time = time.strftime('%Y-%m-%d %H:%M')
+    return str_time

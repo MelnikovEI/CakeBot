@@ -13,7 +13,7 @@ print('Все стандартные торты (у них есть назван
 print()
 print('Все заказы клмиента №4: ', db_api.get_orders(4))
 print()
-print('Создан новый заказ № ', db_api.add_order(4, '2022-01-01', 'Мой адрес, никому не скажу', True, 'Мой пёс - получатель', 'Мой коммент', 'Принят'))
+print('Создан новый заказ № ', db_api.add_order(4, db_api.get_current_datetime(), db_api.get_estimate_delivery_datetime(True), 'Мой адрес, никому не скажу', True, 'Мой пёс - получатель', 'Мой коммент', 'Принят'))
 print()
 print('Создан новый торт № ', db_api.create_cake('3', 'Square', 'Milk chocolate', 'No berries', 'No decor'))
 print()
