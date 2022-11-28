@@ -83,11 +83,12 @@ def get_pd_status(client_id):
         return account.pd_read
 
 
-def add_order(client_id, delivery_datetime: datetime, delivery_address, is_urgent, comment='', status=''):
+def add_order(client_id, delivery_datetime: datetime, delivery_address, is_urgent, recipient_name='', comment='', status=''):
     """Creates new order"""
     client = Client.objects.get(id=client_id)
     new_order = Order(client=client, delivery_datetime=delivery_datetime,
-                      delivery_address=delivery_address, is_urgent=is_urgent, comment=comment, status=status)
+                      delivery_address=delivery_address, is_urgent=is_urgent, recipient_name=recipient_name,
+                      comment=comment, status=status)
     new_order.save()
     return new_order.pk
 

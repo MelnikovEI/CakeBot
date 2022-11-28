@@ -150,7 +150,6 @@ def generate_markup_for_multiple_choice_orders(list):
     return markups 
 
     
-
 cake_levels = db_api.get_levels()
 cake_shapes = db_api.get_shapes()
 cake_toppings = db_api.get_toppings()
@@ -174,6 +173,7 @@ def enter_main_menu(message):
             )
 
 state = 'pending'
+
 
 @bot.message_handler(content_types=['text'])
 def process_answer(message):
