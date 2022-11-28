@@ -331,7 +331,7 @@ def callback(call):
             if call.data == 'repeat_last_order':
                 if len(orders) > 0:
                     last_order = orders[-1]
-                    bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text='This is your last order: ', reply_markup=theme_markup.get_repeat_last_order_markup())
+                    bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text=f'This is your last order: \nOrder date: {last_order.get("creation_datetime")} Cake: {get_cake_name_by_id(last_order.get("cake_id"), menu_cakes)}, Status: {last_order.get("status")}', reply_markup=theme_markup.get_repeat_last_order_markup())
                 else:
                     bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text='You dont have any orders', reply_markup=theme_markup.get_last_order_delivery_status_markup())
             if call.data == 'repeat_specific_order':
@@ -462,8 +462,7 @@ def callback(call):
             if call.data == 'confirm_urgent':
                 print('Urgent - True')
                 created_order['is_urgent'] = True
-                new_order_personal_key = db_api.add_order(created_order['client_id'], '2022-11-28', '2022-11-29', created_order['delivery_address'], created_order['is_urgent'], created_order['receiver'], created_order['comment'], 'pending')
-               # new_order_personal_key = db_api.add_order(created_order['client_id'], db_api.get_current_datetime, db_api.get_estimate_delivery_datetime(created_order['is_urgent']), created_order['delivery_address'], created_order['is_urgent'], created_order['receiver'], created_order['comment'], 'pending')
+                new_order_personal_key = db_api.add_order(created_order['client_id'], db_api.get_current_datetime, db_api.get_estimate_delivery_datetime(created_order['is_urgent']), created_order['delivery_address'], created_order['is_urgent'], created_order['receiver'], created_order['comment'], 'pending')
                 if not ordering_custom_cake:
                     db_api.add_cake_to_order(new_order_personal_key, menu_cake_id)
                 else:
@@ -473,8 +472,7 @@ def callback(call):
             if call.data == 'not_urgent':
                 print('Urgent - False')
                 created_order['is_urgent'] = False
-                new_order_personal_key = db_api.add_order(created_order['client_id'], '2022-11-28', '2022-11-29', created_order['delivery_address'], created_order['is_urgent'], created_order['receiver'], created_order['comment'], 'pending')
-               # new_order_personal_key = db_api.add_order(created_order['client_id'], db_api.get_current_datetime, db_api.get_estimate_delivery_datetime(created_order['is_urgent']), created_order['delivery_address'], created_order['is_urgent'], created_order['receiver'], created_order['comment'], 'pending')
+                new_order_personal_key = db_api.add_order(created_order['client_id'], db_api.get_current_datetime, db_api.get_estimate_delivery_datetime(created_order['is_urgent']), created_order['delivery_address'], created_order['is_urgent'], created_order['receiver'], created_order['comment'], 'pending')
                 if len(menu_cake_id) > 0:
                     db_api.add_cake_to_order(new_order_personal_key, menu_cake_id)
                 else:
