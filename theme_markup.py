@@ -3,7 +3,7 @@ from telebot import types
 
 def get_start_markup():
     markup = types.InlineKeyboardMarkup(row_width=1)
-    accept_conditions = types.InlineKeyboardButton('Accept terms and conditions', callback_data='back_to_main')
+    accept_conditions = types.InlineKeyboardButton('Accept terms and conditions', callback_data='accept_conditions')
     markup.add(accept_conditions)
     return markup
 

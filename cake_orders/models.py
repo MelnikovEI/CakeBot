@@ -82,6 +82,7 @@ class Order(models.Model):
     cake = models.ManyToManyField(Cake, verbose_name='cakes in the order')
     client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name='client')
     comment = models.CharField('comment for order and delivery', max_length=400, blank=True)
+    creation_datetime = models.DateTimeField("date and time of the creation")
     delivery_datetime = models.DateTimeField("date and time of the delivery")
     delivery_address = models.CharField('delivery address', max_length=200)
     recipient_name = models.CharField('recipient name', max_length=200, blank=True)

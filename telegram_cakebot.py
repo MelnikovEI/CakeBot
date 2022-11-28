@@ -3,12 +3,9 @@ import os
 import telebot
 from telebot import types
 
+import db_api
 import theme_markup
 from bake_cake import setup
-
-setup()
-
-import db_api
 
 bot = telebot.TeleBot('5930122900:AAG0d2Wxllm1Z5cb6E3AFDXBxM3czITkBzc')
 
@@ -26,31 +23,6 @@ custom_cake_decorations_message = 'Choose the cake decorations'
 custom_cake_inscription_message = 'Do you want an inscription ?'
 custom_cake_receive_inscription_message = 'Please enter the inscription'
 prepare_custom_order_message = 'Confirm order ?'
-
-# get_orders(client_id)
-t_orders = [
-    {
-        'id': 1,
-        'date': '26.11.2022',
-        'time': '14:00',
-        'cake_id': 5,
-        'status': 'completed',
-    },
-    {
-        'id': 2,
-        'date': '25.11.2022',
-        'time': '15:00',
-        'cake_id': 3,
-        'status': 'completed',
-    },
-    {
-        'id': 3,
-        'date': '25.11.2022',
-        'time': '15:00',
-        'cake_id': 2,
-        'status': 'canceled',
-    }
-]
 
 
 def get_split_list(list, chunk_size):
@@ -160,20 +132,46 @@ menu_cakes = db_api.get_standard_cakes()
 
 custom_cake_markups = generate_markups_for_custom_cake(cake_levels, cake_shapes, cake_toppings, cake_berries, cake_decorations)
 cake_menu_markup = generate_markup_for_multiple_choice_cakes(menu_cakes)
+state = 'pending'
 
 
 @bot.message_handler(commands=['start'])
 def enter_main_menu(message):
-    with open('BakeCake.pdf', 'rb') as terms_of_service:
-        bot.send_document(
-                message.chat.id,
-                document=terms_of_service,
-                caption='You must accept the terms and conditions',
-                reply_markup=theme_markup.get_start_markup()
-            )
-
-state = 'pending'
-
+    global created_order
+    global state
+    global message_to_delete
+    global cake_customisation
+    global menu_cake_id
+    if db_api.get_pd_status(message.from_user.id):
+            state = 'main'
+            menu_cake_id = ''
+            created_order = {
+                'client_id': message.from_user.id,
+                'delivery_datetime': '',
+                'delivery_address': '',
+                'receiver': '',
+                'is_urgent': False,
+                'comment': '',
+                'status': '',
+            }
+            cake_customisation = {
+                'level': '',
+                'shape': '',
+                'topping': '',
+                'berries': '',
+                'decor': '',
+                'inscription': '',
+            }
+            with open(os.path.join('images', 'cake_main.png'), 'rb') as cake_picture:
+                bot.send_photo(message.chat.id, cake_picture, caption=main_menu_message, reply_markup=theme_markup.get_main_markup())
+    else:    
+        with open('BakeCake.pdf', 'rb') as terms_of_service:
+            bot.send_document(
+                    message.chat.id,
+                    document=terms_of_service,
+                    caption='You must accept the terms and conditions',
+                    reply_markup=theme_markup.get_start_markup()
+                )
 
 @bot.message_handler(content_types=['text'])
 def process_answer(message):
@@ -224,7 +222,9 @@ def callback(call):
     global cake_customisation
     global menu_cake_id
     if call.message:
-        if call.data == 'back_to_main':
+        if call.data == 'back_to_main' or 'accept_conditions':
+            if call.data == 'accept_conditions':
+                db_api.add_client(call.message.from_user.id, pd_read=True)
             state = 'main'
             menu_cake_id = ''
             created_order = {
@@ -431,11 +431,26 @@ def callback(call):
             if call.data == 'confirm_urgent':
                 print('Urgent - True')
                 created_order['is_urgent'] = True
+                new_order_personal_key = db_api.add_order(created_order['client_id'], db_api.get_current_datetime, db_api.get_estimate_delivery_datetime(db_api.get_current_datetime, created_order['is_urgent']), created_order['delivery_address'], created_order['is_urgent'], created_order['receiver'], created_order['comment'], 'pending')
+                if len(menu_cake_id) > 0:
+                    db_api.add_cake_to_order(new_order_personal_key, menu_cake_id)
+                else:
+                    custom_cake_personal_key = db_api.create_cake(cake_customisation['level'],cake_customisation['shape'], cake_customisation['topping'], cake_customisation['berries'], cake_customisation['decor'], cake_customisation['inscription'])
+                    db_api.add_cake_to_order(new_order_personal_key, custom_cake_personal_key)
                 bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text='Thank you for your order. You can check its status in the main menu', reply_markup=theme_markup.get_order_finish_markup())
             if call.data == 'not_urgent':
                 print('Urgent - False')
                 created_order['is_urgent'] = False
+                new_order_personal_key = db_api.add_order(created_order['client_id'], db_api.get_current_datetime, db_api.get_estimate_delivery_datetime(db_api.get_current_datetime, created_order['is_urgent']), created_order['delivery_address'], created_order['is_urgent'], created_order['receiver'], created_order['comment'], 'pending')
+                if len(menu_cake_id) > 0:
+                    db_api.add_cake_to_order(new_order_personal_key, menu_cake_id)
+                else:
+                    custom_cake_personal_key = db_api.create_cake(cake_customisation['level'],cake_customisation['shape'], cake_customisation['topping'], cake_customisation['berries'], cake_customisation['decor'], cake_customisation['inscription'])
+                    db_api.add_cake_to_order(new_order_personal_key, custom_cake_personal_key)
                 bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text='Thank you for your order. You can check its status in the main menu', reply_markup=theme_markup.get_order_finish_markup())
-            
-        
-bot.polling()
+
+
+
+if __name__ == '__main__':
+    setup()
+    bot.polling()
