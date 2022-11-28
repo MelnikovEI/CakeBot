@@ -83,7 +83,7 @@ def get_pd_status(tg_account):
         return account.pd_read
 
 
-def add_order(client_id, creation_datetime: datetime, delivery_datetime: datetime, delivery_address, is_urgent, recipient_name='', comment='', status=''):
+def add_order(client_id, creation_datetime, delivery_datetime, delivery_address, is_urgent, recipient_name='', comment='', status=''):
     """Creates new order"""
     client = Client.objects.get(id=client_id)
     new_order = Order(client=client, creation_datetime=creation_datetime, delivery_datetime=delivery_datetime,
