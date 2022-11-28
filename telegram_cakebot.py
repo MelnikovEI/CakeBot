@@ -146,28 +146,32 @@ def enter_main_menu(message):
     global message_to_delete
     global cake_customisation
     global menu_cake_id
-    if db_api.get_pd_status(message.from_user.id):
-            state = 'main'
-            menu_cake_id = ''
-            created_order = {
-                'client_id': message.from_user.id,
-                'delivery_datetime': '',
-                'delivery_address': '',
-                'receiver': '',
-                'is_urgent': False,
-                'comment': '',
-                'status': '',
-            }
-            cake_customisation = {
-                'level': '',
-                'shape': '',
-                'topping': '',
-                'berries': '',
-                'decor': '',
-                'inscription': '',
-            }
-            with open(os.path.join('images', 'cake_main.png'), 'rb') as cake_picture:
-                bot.send_photo(message.chat.id, cake_picture, caption=main_menu_message, reply_markup=theme_markup.get_main_markup())
+    global message_sender_username
+    global client_id
+    message_sender_username = message.from_user.username
+    if db_api.get_pd_status(message_sender_username):
+        client_id = db_api.add_client(message_sender_username, pd_read=True)
+        state = 'main'
+        menu_cake_id = ''
+        created_order = {
+            'client_id': client_id,
+            'delivery_datetime': '',
+            'delivery_address': '',
+            'receiver': '',
+            'is_urgent': False,
+            'comment': '',
+            'status': '',
+        }
+        cake_customisation = {
+            'level': '',
+            'shape': '',
+            'topping': '',
+            'berries': '',
+            'decor': '',
+            'inscription': '',
+        }
+        with open(os.path.join('images', 'cake_main.png'), 'rb') as cake_picture:
+            bot.send_photo(message.chat.id, cake_picture, caption=main_menu_message, reply_markup=theme_markup.get_main_markup())
     else:    
         with open('BakeCake.pdf', 'rb') as terms_of_service:
             bot.send_document(
@@ -176,6 +180,7 @@ def enter_main_menu(message):
                     caption='You must accept the terms and conditions',
                     reply_markup=theme_markup.get_start_markup()
                 )
+        
 
 @bot.message_handler(content_types=['text'])
 def process_answer(message):
@@ -225,14 +230,38 @@ def callback(call):
     global message_to_delete
     global cake_customisation
     global menu_cake_id
+    global client_id
+    global message_sender_username
     if call.message:
-        if call.data == 'back_to_main' or 'accept_conditions':
-            if call.data == 'accept_conditions':
-                db_api.add_client(call.message.from_user.id, pd_read=True)
+        if call.data == 'accept_conditions':
+            client_id = db_api.add_client(message_sender_username, pd_read=True)
+            bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.id)
             state = 'main'
             menu_cake_id = ''
             created_order = {
-                'client_id': call.message.from_user.id,
+                'client_id': client_id,
+                'delivery_datetime': '',
+                'delivery_address': '',
+                'receiver': '',
+                'is_urgent': False,
+                'comment': '',
+                'status': '',
+            }
+            cake_customisation = {
+                'level': '',
+                'shape': '',
+                'topping': '',
+                'berries': '',
+                'decor': '',
+                'inscription': '',
+            }
+            with open(os.path.join('images', 'cake_main.png'), 'rb') as cake_picture:
+                bot.send_photo(call.message.chat.id, cake_picture, caption=main_menu_message, reply_markup=theme_markup.get_main_markup())
+        if call.data == 'back_to_main':
+            state = 'main'
+            menu_cake_id = ''
+            created_order = {
+                'client_id': client_id,
                 'delivery_datetime': '',
                 'delivery_address': '',
                 'receiver': '',
@@ -264,7 +293,7 @@ def callback(call):
                 bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text=cake_menu_message, reply_markup=cake_menu_markup[int(call.data.split('_')[3])-1])
             if 'list_position_id' in call.data:
                 menu_cake_id = (int(call.data.split("_")[3]))
-                print('Chosen cake id: ' + menu_cake_id)
+                print(f'Chosen cake id: {menu_cake_id}')
                 bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text=f'You have selected {get_cake_name_by_id(int(call.data.split("_")[3]), menu_cakes)}', reply_markup=theme_markup.get_menu_cake_confirm_markup())
             if 'decline_order_menu_cake' in call.data:
                 bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text=cake_menu_message, reply_markup=cake_menu_markup[0])
@@ -278,7 +307,7 @@ def callback(call):
 # delivery status
         if call.data == 'last_order_delivery_status':
             state = 'last_order_status'
-            orders = db_api.get_orders(call.message.from_user.id)
+            orders = db_api.get_orders(client_id)
             bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.id)
             if len(orders) > 0:
                 last_order = orders[-1]
@@ -301,7 +330,7 @@ def callback(call):
             bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.id)
             bot.send_message(call.message.chat.id, 'Check your order history', reply_markup=theme_markup.get_history_markup())
         if state == 'order_history':
-            orders = db_api.get_orders(call.message.from_user.id)
+            orders = db_api.get_orders(client_id)
             if call.data == 'repeat_last_order':
                 if len(orders) > 0:
                     last_order = orders[-1]
@@ -435,7 +464,7 @@ def callback(call):
             if call.data == 'confirm_urgent':
                 print('Urgent - True')
                 created_order['is_urgent'] = True
-                new_order_personal_key = db_api.add_order(created_order['client_id'], db_api.get_current_datetime, db_api.get_estimate_delivery_datetime(db_api.get_current_datetime, created_order['is_urgent']), created_order['delivery_address'], created_order['is_urgent'], created_order['receiver'], created_order['comment'], 'pending')
+                new_order_personal_key = db_api.add_order(created_order['client_id'], db_api.get_current_datetime, db_api.get_estimate_delivery_datetime(created_order['is_urgent']), created_order['delivery_address'], created_order['is_urgent'], created_order['receiver'], created_order['comment'], 'pending')
                 if len(menu_cake_id) > 0:
                     db_api.add_cake_to_order(new_order_personal_key, menu_cake_id)
                 else:
@@ -445,7 +474,7 @@ def callback(call):
             if call.data == 'not_urgent':
                 print('Urgent - False')
                 created_order['is_urgent'] = False
-                new_order_personal_key = db_api.add_order(created_order['client_id'], db_api.get_current_datetime, db_api.get_estimate_delivery_datetime(db_api.get_current_datetime, created_order['is_urgent']), created_order['delivery_address'], created_order['is_urgent'], created_order['receiver'], created_order['comment'], 'pending')
+                new_order_personal_key = db_api.add_order(created_order['client_id'], db_api.get_current_datetime, db_api.get_estimate_delivery_datetime(created_order['is_urgent']), created_order['delivery_address'], created_order['is_urgent'], created_order['receiver'], created_order['comment'], 'pending')
                 if len(menu_cake_id) > 0:
                     db_api.add_cake_to_order(new_order_personal_key, menu_cake_id)
                 else:

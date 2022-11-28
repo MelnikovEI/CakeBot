@@ -73,10 +73,10 @@ def add_client(tg_account, pd_read=False):
         return account.pk
 
 
-def get_pd_status(client_id):
+def get_pd_status(tg_account):
     """Checks PD status"""
     try:
-        account = Client.objects.get(id=client_id)
+        account = Client.objects.get(tg_account=tg_account)
     except Client.DoesNotExist:
         return False
     else:
@@ -115,10 +115,11 @@ def get_cakes(order_id):
 
 def get_current_datetime():
     current_time = datetime.datetime.now()
-    return current_time
+    return str(current_time)
 
-def get_estimate_delivery_datetime(time, urgent):
+def get_estimate_delivery_datetime(urgent):
     if urgent:
-        time = time + datetime.timedelta(days=1)
+        time = datetime.datetime.now() + datetime.timedelta(days=1)
     else:
-        time = time + datetime.timedelta(days=3)
+        time = datetime.datetime.now() + datetime.timedelta(days=3)
+    return str(time)
