@@ -71,6 +71,7 @@ def generate_markups_for_custom_cake(cake_levels, cake_shapes, cake_toppings, ca
     markups.append(cake_decorations_markup)
     return markups
 
+
 def get_cake_name_by_id(needed_id, list):
     for list_item in list:
         if list_item.get("id") == needed_id:
@@ -98,8 +99,9 @@ def generate_markup_for_multiple_choice_cakes(list):
             markup.add(next)
         markup.add(back_to_main)
         markups.append(markup)
-    return markups 
-    
+    return markups
+
+
 def generate_markup_for_multiple_choice_orders(list):
     markups = []
     back_to_main = types.InlineKeyboardButton('Exit', callback_data='back_to_main')
@@ -347,7 +349,6 @@ def callback(call):
                 else:
                     bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text='You dont have any orders', reply_markup=theme_markup.get_last_order_delivery_status_markup())
 
-
         if state == 'checking_specific_orders':
             if 'markup_next_from' in call.data:
                 bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text='Your previous orders', reply_markup=user_history_markup[int(call.data.split('_')[3])+1])
@@ -484,7 +485,6 @@ def callback(call):
                     custom_cake_personal_key = db_api.create_cake(cake_customisation['level'],cake_customisation['shape'], cake_customisation['topping'], cake_customisation['berries'], cake_customisation['decor'], cake_customisation['inscription'])
                     db_api.add_cake_to_order(new_order_personal_key, custom_cake_personal_key)
                 bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text=f'Thank you for your order. Your total: {db_api.get_order_price(new_order_personal_key)} You can check its status in the main menu', reply_markup=theme_markup.get_order_finish_markup())
-
 
 
 if __name__ == '__main__':

@@ -69,12 +69,14 @@ def get_history_markup():
     markup.add(repeat_last_order, repeat_select_order, back_to_main)
     return markup
 
+
 def get_repeat_last_order_markup():
     markup = types.InlineKeyboardMarkup(row_width=1)
     accept_repeat_last_order = types.InlineKeyboardButton('Do you wish to repeat this order ?', callback_data='accept_repeat_last_order')
     back_to_main = types.InlineKeyboardButton('Back to main menu', callback_data='back_to_main')
     markup.add(accept_repeat_last_order, back_to_main)
     return markup
+
 
 def get_inscription_confirm_markup():
     markup = types.InlineKeyboardMarkup(row_width=1)
@@ -83,12 +85,14 @@ def get_inscription_confirm_markup():
     markup.add(confirm, cancel)
     return markup
 
+
 def get_address_confirm_markup():
     markup = types.InlineKeyboardMarkup(row_width=1)
     confirm = types.InlineKeyboardButton('Address is correct', callback_data='confirm_address')
     reenter = types.InlineKeyboardButton('Reenter address', callback_data='reenter_address')
     markup.add(confirm, reenter)
     return markup
+
 
 def get_receiver_confirm_markup():
     markup = types.InlineKeyboardMarkup(row_width=1)
@@ -97,6 +101,7 @@ def get_receiver_confirm_markup():
     markup.add(confirm, reenter)
     return markup
 
+
 def get_comment_confirm_markup():
     markup = types.InlineKeyboardMarkup(row_width=1)
     confirm = types.InlineKeyboardButton('Comment is correct', callback_data='confirm_comment')
@@ -104,11 +109,13 @@ def get_comment_confirm_markup():
     markup.add(confirm, reenter)
     return markup
 
+
 def get_order_finish_markup():
     markup = types.InlineKeyboardMarkup(row_width=1)
     back_to_main = types.InlineKeyboardButton('Back to main menu', callback_data='back_to_main')
     markup.add(back_to_main)
     return markup
+
 
 def get_urgent_confirm_markup():
     markup = types.InlineKeyboardMarkup(row_width=1)
