@@ -3,9 +3,13 @@ import os
 import telebot
 from telebot import types
 
-import db_api
+
 import theme_markup
 from bake_cake import setup
+
+setup()
+
+import db_api
 
 bot = telebot.TeleBot('5930122900:AAG0d2Wxllm1Z5cb6E3AFDXBxM3czITkBzc')
 
@@ -452,5 +456,4 @@ def callback(call):
 
 
 if __name__ == '__main__':
-    setup()
     bot.polling()
