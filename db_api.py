@@ -113,10 +113,17 @@ def get_cakes(order_id):
     return list(cakes.values('id', 'title', 'price'))
 
 
+def get_cake_price(cake_id):
+    """get cake price"""
+    cake = Cake.objects.get(id=cake_id)
+    return cake.price
+
+
 def get_current_datetime():
     current_time = datetime.datetime.now()
     str_time = current_time.strftime('%Y-%m-%d')
     return str_time
+
 
 def get_estimate_delivery_datetime(urgent):
     if urgent:
